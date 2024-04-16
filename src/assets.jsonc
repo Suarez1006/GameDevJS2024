@@ -70,25 +70,9 @@
 			}
 		},
 		{
-			"name": "package-1",
+			"name": "jsons",
 			"assets": {
-				"package 1 background": "./img/big_placeholder/background-1.jpg",
-				"big_background": "./img/big_placeholder/bg_game.png",
-				"mask_demo": "./img/big_placeholder/mask_demo@0.5x.png" // @0.5x means 50% of the original size, pixi will internally upscale and you will never know!
-			}
-		},
-		{
-			"name": "package-2",
-			"assets": {
-				"package 2 background": "./img/big_placeholder/background-2.jpg"
-			}
-		},
-		{
-			"name": "3d",
-			"assets": {
-				"duckModel": "./models/duck/Duck.gltf",
-				"dancingStormtrooper": "./models/dancing-stormtrooper.glb",
-				"gridTexture": "./img/big_placeholder/bg_game.png"
+				"map1": "./json/map1.json"
 			}
 		}
 	]
