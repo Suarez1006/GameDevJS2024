@@ -7,7 +7,8 @@ import { forceFocus, preventDrag, preventKeys } from "./engine/utils/browserFunc
 import { ScaleHelper } from "./engine/utils/ScaleHelper";
 import { ForagePersistanceProvider } from "./engine/datamanager/ForagePersistanceProvider";
 import { PixiRenderer } from "./engine/scenemanager/renderers/PixiRenderer";
-import { DuckScene } from "./project/scenes/DuckScene";
+
+import { GameScene } from "./project/scenes/GameScene";
 import { settings } from "pixi.js";
 import { DEFAULTS } from "tweedle.js";
 import { Box2DHelper } from "./engine/utils/Box2DHelper";
@@ -59,7 +60,7 @@ window.dispatchEvent(new Event("resize"));
 
 const initializeCb = function (): void {
 	// Manager.changeScene(import(/* webpackPrefetch: true */ "./project/scenes/LoaderScene"));
-	Manager.changeScene(DuckScene);
+	Manager.changeScene(GameScene);
 };
 
 if (ALL_FLAGS.USE_BOX2D) {
