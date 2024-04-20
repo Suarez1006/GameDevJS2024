@@ -6,6 +6,7 @@ import { PixiScene } from "../../engine/scenemanager/scenes/PixiScene";
 import { ScaleHelper } from "../../engine/utils/ScaleHelper";
 import { GameMap } from "../elements/GameMap";
 import { Player } from "../elements/Player";
+import { Collisions } from "../managers/Collisions";
 
 export class GameScene extends PixiScene {
 	public static readonly BUNDLES = ["jsons"];
@@ -14,7 +15,7 @@ export class GameScene extends PixiScene {
 	private keybinds: Keyboard;
 
 	private player: Player;
-	private playerSpeed: number = 10;
+	private playerSpeed: number = 3;
 
 	private map: GameMap;
 	constructor() {
@@ -25,15 +26,14 @@ export class GameScene extends PixiScene {
 		this.bg.drawRect(0, 0, 1, 1);
 		this.addChild(this.bg);
 
-		this.map = new GameMap("map1");
-		this.addChild(this.map);
-
 		this.player = new Player();
-		this.map.addPlayer(this.player);
+		this.map = new GameMap("map1", this.player);
+		this.addChild(this.map);
 	}
 
 	public override update(_dt: number): void {
 		this.playerMovement();
+		Collisions.getInstance().update();
 	}
 
 	public override onResize(_newW: number, _newH: number): void {
@@ -55,6 +55,19 @@ export class GameScene extends PixiScene {
 			this.player.y = this.player.y + this.playerSpeed;
 			if (this.player.y > Manager.height - this.player.height) {
 				this.player.y = Manager.height - this.player.height;
+			}
+		}
+		if (this.keybinds.isDown(Key.KEY_A) || this.keybinds.isDown("ArrowLeft")) {
+			this.player.x = this.player.x - this.playerSpeed;
+
+			if (this.player.x < 0) {
+				this.player.x = 0;
+			}
+		}
+		if (this.keybinds.isDown(Key.KEY_D) || this.keybinds.isDown("ArrowRight")) {
+			this.player.x = this.player.x + this.playerSpeed;
+			if (this.player.x > Manager.width - this.player.width) {
+				this.player.x = Manager.width - this.player.width;
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 import { Graphics } from "pixi.js";
 import { Container } from "pixi.js";
+import { addHitbox } from "../managers/Collisions";
 
 export class Player extends Container {
 	private body: Graphics = new Graphics();
@@ -8,5 +9,7 @@ export class Player extends Container {
 		this.body.beginFill(0x4309ae);
 		this.body.drawRect(0, 0, 30, 30);
 		this.addChild(this.body);
+
+		addHitbox({ object: this, tag: "Character" });
 	}
 }

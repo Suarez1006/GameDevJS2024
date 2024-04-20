@@ -2,6 +2,7 @@ import { Assets, Container, Graphics } from "pixi.js";
 import type { JSONTileMap, TileLayer } from "../../engine/utils/TiledJSONSimplifier";
 import { formatTiledJSON } from "../../engine/utils/TiledJSONSimplifier";
 import type { Player } from "./Player";
+import { addHitbox } from "../managers/Collisions";
 
 class PlaceholderTile extends Graphics {
 	constructor(color: number, alpha?: number) {
@@ -20,7 +21,7 @@ enum TileType {
 export class GameMap extends Container {
 	private startZone: { x: number; y: number };
 	private mapBg: Graphics = new Graphics();
-	constructor(mapName: string) {
+	constructor(mapName: string, player: Player) {
 		super();
 		this.eventMode = "none";
 
@@ -46,9 +47,11 @@ export class GameMap extends Container {
 						break;
 					case TileType.WALL:
 						tile = new PlaceholderTile(0x7c8489);
+						addHitbox({ object: tile, tag: "Solid" });
 						break;
 					case TileType.BARRIER:
 						tile = new PlaceholderTile(0xa28d55);
+						addHitbox({ object: tile, tag: "Barrier" });
 						break;
 					case TileType.SPAWN:
 						this.startZone = { x: xQuantity * formattedJson.tilewidth, y: yQuantity * formattedJson.tileheight };
@@ -61,10 +64,13 @@ export class GameMap extends Container {
 				tileIndex++;
 			}
 		}
-	}
 
-	public addPlayer(player: Player): void {
 		this.addChild(player);
 		player.position.set(this.startZone.x, this.startZone.y);
 	}
+
+	// public addPlayer(player: Player): void {
+	// 	this.addChild(player);
+	// 	player.position.set(this.startZone.x, this.startZone.y);
+	// }
 }
