@@ -1,41 +1,70 @@
 import { Assets, Container, Graphics } from "pixi.js";
 import type { JSONTileMap, TileLayer } from "../../engine/utils/TiledJSONSimplifier";
 import { formatTiledJSON } from "../../engine/utils/TiledJSONSimplifier";
+import type { Player } from "./Player";
 
+class PlaceholderTile extends Graphics {
+	constructor(color: number, alpha?: number) {
+		super();
+		this.beginFill(color, alpha);
+		this.drawRect(0, 0, 30, 30);
+		this.cullable = true;
+	}
+}
+enum TileType {
+	FLOOR = 0,
+	WALL = 1,
+	BARRIER = 2,
+	SPAWN = 3,
+}
 export class GameMap extends Container {
+	private startZone: { x: number; y: number };
+	private mapBg: Graphics = new Graphics();
 	constructor(mapName: string) {
 		super();
 		this.eventMode = "none";
 
+		this.mapBg.beginFill(0xbeced6);
+		this.mapBg.drawRect(0, 0, 1, 1);
+		this.addChild(this.mapBg);
+
 		const rawJSON = Assets.get(mapName);
 		const formattedJson: JSONTileMap = formatTiledJSON(rawJSON);
-		const firstLayer = formattedJson.layersRecord["Capa de patrones 1"] as TileLayer;
+		const firstLayer = formattedJson.layersRecord["Base"] as TileLayer;
 		const data = firstLayer.data;
+		this.mapBg.width = formattedJson.width * formattedJson.tilewidth;
+		this.mapBg.height = formattedJson.height * formattedJson.tileheight;
 
 		let tileIndex = 0;
 
 		for (let yQuantity = 0; yQuantity < formattedJson.height; yQuantity++) {
 			for (let xQuantity = 0; xQuantity < formattedJson.width; xQuantity++) {
-				if (data[tileIndex] == 0) {
-					tileIndex++;
-					continue;
+				let tile: PlaceholderTile;
+				switch (data[tileIndex]) {
+					case TileType.FLOOR:
+						tile = new PlaceholderTile(0xbeced6);
+						break;
+					case TileType.WALL:
+						tile = new PlaceholderTile(0x7c8489);
+						break;
+					case TileType.BARRIER:
+						tile = new PlaceholderTile(0xa28d55);
+						break;
+					case TileType.SPAWN:
+						this.startZone = { x: xQuantity * formattedJson.tilewidth, y: yQuantity * formattedJson.tileheight };
+						break;
 				}
-				console.log("create", tileIndex);
-
-				const tile = new Graphics();
-				tile.beginFill(0xff00ff);
-				tile.drawRect(0, 0, 1, 1);
-				tile.endFill();
-				this.addChild(tile);
-
-				tile.cullable = true;
-				tile.width = 32;
-				tile.height = 32;
-
-				tile.position.set(xQuantity * 32, yQuantity * 32);
-
+				if (tile != null) {
+					this.addChild(tile);
+					tile.position.set(xQuantity * formattedJson.tilewidth, yQuantity * formattedJson.tileheight);
+				}
 				tileIndex++;
 			}
 		}
+	}
+
+	public addPlayer(player: Player): void {
+		this.addChild(player);
+		player.position.set(this.startZone.x, this.startZone.y);
 	}
 }

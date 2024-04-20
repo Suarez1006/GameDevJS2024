@@ -1,3 +1,4 @@
+import { Graphics } from "pixi.js";
 import { Manager } from "../..";
 import { Key } from "../../engine/input/Key";
 import { Keyboard } from "../../engine/input/Keyboard";
@@ -9,6 +10,7 @@ import { Player } from "../elements/Player";
 export class GameScene extends PixiScene {
 	public static readonly BUNDLES = ["jsons"];
 
+	private bg: Graphics = new Graphics();
 	private keybinds: Keyboard;
 
 	private player: Player;
@@ -19,11 +21,15 @@ export class GameScene extends PixiScene {
 		super();
 		this.keybinds = new Keyboard();
 
+		this.bg.beginFill(0x0e0e0e);
+		this.bg.drawRect(0, 0, 1, 1);
+		this.addChild(this.bg);
+
 		this.map = new GameMap("map1");
 		this.addChild(this.map);
 
 		this.player = new Player();
-		this.map.addChild(this.player);
+		this.map.addPlayer(this.player);
 	}
 
 	public override update(_dt: number): void {
@@ -31,6 +37,8 @@ export class GameScene extends PixiScene {
 	}
 
 	public override onResize(_newW: number, _newH: number): void {
+		this.bg.width = _newW;
+		this.bg.height = _newH;
 		ScaleHelper.setScaleRelativeToScreen(this.map, _newW, _newH, 1, 1);
 		this.map.position.set(_newW / 2 - this.map.width / 2, _newH / 2 - this.map.height / 2);
 	}
@@ -42,7 +50,6 @@ export class GameScene extends PixiScene {
 			if (this.player.y < 0) {
 				this.player.y = 0;
 			}
-			console.log(this.player.y);
 		}
 		if (this.keybinds.isDown(Key.KEY_S) || this.keybinds.isDown("ArrowDown")) {
 			this.player.y = this.player.y + this.playerSpeed;

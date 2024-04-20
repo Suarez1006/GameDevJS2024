@@ -6,8 +6,7 @@ export class Player extends Container {
 	constructor() {
 		super();
 		this.body.beginFill(0x4309ae);
-		this.body.drawRect(0, 0, 50, 50);
-		this.body.position.set(300, 500);
+		this.body.drawRect(0, 0, 30, 30);
 		this.addChild(this.body);
 	}
 }
