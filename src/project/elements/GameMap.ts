@@ -66,11 +66,7 @@ export class GameMap extends Container {
 		}
 
 		this.addChild(player);
+		player.mapLimits = { width: formattedJson.width * formattedJson.tilewidth, height: formattedJson.height * formattedJson.tileheight };
 		player.position.set(this.startZone.x, this.startZone.y);
 	}
-
-	// public addPlayer(player: Player): void {
-	// 	this.addChild(player);
-	// 	player.position.set(this.startZone.x, this.startZone.y);
-	// }
 }

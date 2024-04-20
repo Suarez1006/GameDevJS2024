@@ -1,18 +1,18 @@
 import { Graphics } from "pixi.js";
 import { PixiScene } from "../../engine/scenemanager/scenes/PixiScene";
 import { ScaleHelper } from "../../engine/utils/ScaleHelper";
-import { GameMap } from "../elements/GameMap";
 import { Player } from "../elements/Player";
 import { Collisions } from "../managers/Collisions";
+import { LobbyMap } from "../elements/LobbyMap";
 
-export class GameScene extends PixiScene {
-	public static readonly BUNDLES = [""];
+export class LobbyScene extends PixiScene {
+	public static readonly BUNDLES = ["jsons"];
 
 	private bg: Graphics = new Graphics();
 
 	private player: Player;
 
-	private map: GameMap;
+	private map: LobbyMap;
 	constructor() {
 		super();
 
@@ -21,7 +21,7 @@ export class GameScene extends PixiScene {
 		this.addChild(this.bg);
 
 		this.player = new Player();
-		this.map = new GameMap("lobby", this.player);
+		this.map = new LobbyMap(this.player);
 		this.addChild(this.map);
 	}
 

@@ -5,7 +5,7 @@ export function addHitbox(params: { object: DisplayObject; tag: ColliderTag; cus
 	Collisions.getInstance().addHitbox(params);
 }
 
-type ColliderTag = "Solid" | "Barrier" | "Collectable" | "Bullet" | "Character";
+type ColliderTag = "Solid" | "Barrier" | "Collectable" | "Bullet" | "Character" | "Interaction";
 type HitboxPair = { hitboxA: DisplayObject; hitboxB: DisplayObject };
 type Hitbox2D = { tag: ColliderTag; reference: DisplayObject };
 
@@ -30,7 +30,7 @@ export class Collisions {
 	}
 
 	public addHitbox(params: { object: DisplayObject; tag: ColliderTag; customHitbox?: Rectangle }): void {
-		this.objects.push({ tag: params.tag, reference: params.object }); // rectangle: params.customHitbox ?? params.object.getBounds(),
+		this.objects.push({ tag: params.tag, reference: params.object });
 	}
 
 	public removeHitbox(object: DisplayObject): void {
@@ -74,6 +74,10 @@ export class Collisions {
 
 		if ((tagA == "Character" && tagB == "Barrier") || (tagB == "Character" && tagA == "Barrier")) {
 			this.resolveCharacterSolidCollision(hitboxA, hitboxB);
+		}
+
+		if ((tagA == "Character" && tagB == "Interaction") || (tagB == "Character" && tagA == "Interaction")) {
+			this.collideEmitter.emit("Interaction", { objA: hitboxA.reference, objB: hitboxB.reference });
 		}
 	}
 
