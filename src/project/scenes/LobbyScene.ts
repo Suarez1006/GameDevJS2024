@@ -6,7 +6,7 @@ import { Collisions } from "../managers/Collisions";
 import { LobbyMap } from "../elements/LobbyMap";
 
 export class LobbyScene extends PixiScene {
-	public static readonly BUNDLES = ["jsons"];
+	public static readonly BUNDLES = ["jsons", "sprites"];
 
 	private bg: Graphics = new Graphics();
 
