@@ -43,8 +43,8 @@ export class GameMap extends Container {
 				let tile: PlaceholderTile;
 				switch (data[tileIndex]) {
 					case TileType.FLOOR:
-						tile = new PlaceholderTile(0xbeced6);
 						break;
+						tile = new PlaceholderTile(0xbeced6);
 					case TileType.WALL:
 						tile = new PlaceholderTile(0x7c8489);
 						addHitbox({ object: tile, tag: "Solid" });

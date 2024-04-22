@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { DisplayObject, Rectangle } from "pixi.js";
 import { utils } from "pixi.js";
 
@@ -6,7 +7,6 @@ export function addHitbox(params: { object: DisplayObject; tag: ColliderTag; cus
 }
 
 type ColliderTag = "Solid" | "Barrier" | "Collectable" | "Bullet" | "Character" | "Interaction";
-type HitboxPair = { hitboxA: DisplayObject; hitboxB: DisplayObject };
 type Hitbox2D = { tag: ColliderTag; reference: DisplayObject };
 
 export class Collisions {
@@ -38,26 +38,44 @@ export class Collisions {
 	}
 
 	private checkCollisions(): void {
-		const checkedPairs = new Set<HitboxPair>();
-
 		for (let i = 0; i < this.objects.length; i++) {
 			const hitboxA = this.objects[i];
+			if (hitboxA.reference == null || hitboxA.reference.destroyed) {
+				this.removeHitbox(hitboxA.reference);
+				continue;
+			}
 			const boundsA = hitboxA.reference.getBounds();
 			for (let j = i + 1; j < this.objects.length; j++) {
 				const hitboxB = this.objects[j];
-				const boundsB = hitboxB.reference.getBounds();
-				const pairId = this.getPairId(hitboxA.reference, hitboxB.reference);
-
-				if (checkedPairs.has(pairId)) {
+				if (hitboxB.reference == null || hitboxB.reference.destroyed) {
+					this.removeHitbox(hitboxB.reference);
 					continue;
 				}
-				checkedPairs.add(pairId);
+
+				if (!this.checkAdmitedPairs(hitboxA.tag, hitboxB.tag)) {
+					continue;
+				}
+
+				const boundsB = hitboxB.reference.getBounds();
 
 				if (boundsA.intersects(boundsB)) {
 					this.resolveByTags(hitboxA, hitboxB);
 				}
 			}
 		}
+	}
+
+	private admitedTagPair: Record<ColliderTag, Array<ColliderTag>> = {
+		Solid: ["Character", "Bullet"],
+		Barrier: ["Character"],
+		Collectable: ["Character"],
+		Bullet: ["Character", "Solid"],
+		Character: ["Character", "Solid", "Barrier", "Bullet", "Collectable", "Interaction"],
+		Interaction: ["Character"],
+	};
+
+	private checkAdmitedPairs(tagA: ColliderTag, tagB: ColliderTag): boolean {
+		return this.admitedTagPair[tagA].includes(tagB);
 	}
 
 	private resolveByTags(hitboxA: Hitbox2D, hitboxB: Hitbox2D): void {
@@ -148,9 +166,5 @@ export class Collisions {
 			objA.y -= correctionY;
 			objB.y += correctionY;
 		}
-	}
-
-	private getPairId(objA: DisplayObject, objB: DisplayObject): HitboxPair {
-		return { hitboxA: objA, hitboxB: objB };
 	}
 }
