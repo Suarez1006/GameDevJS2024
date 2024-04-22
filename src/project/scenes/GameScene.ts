@@ -13,7 +13,7 @@ export class GameScene extends PixiScene {
 	private player: Player;
 
 	private map: GameMap;
-	constructor() {
+	constructor(mapName: string) {
 		super();
 
 		this.bg.beginFill(0x0e0e0e);
@@ -21,7 +21,7 @@ export class GameScene extends PixiScene {
 		this.addChild(this.bg);
 
 		this.player = new Player();
-		this.map = new GameMap("lobby", this.player);
+		this.map = new GameMap(mapName, this.player);
 		this.addChild(this.map);
 	}
 

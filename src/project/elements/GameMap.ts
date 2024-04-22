@@ -3,6 +3,7 @@ import type { JSONTileMap, TileLayer } from "../../engine/utils/TiledJSONSimplif
 import { formatTiledJSON } from "../../engine/utils/TiledJSONSimplifier";
 import type { Player } from "./Player";
 import { addHitbox } from "../managers/Collisions";
+import { InteractionBox } from "./InteractionBox";
 
 class PlaceholderTile extends Graphics {
 	constructor(color: number, alpha?: number) {
@@ -17,6 +18,7 @@ enum TileType {
 	WALL = 1,
 	BARRIER = 2,
 	SPAWN = 3,
+	END = 4,
 }
 export class GameMap extends Container {
 	private startZone: { x: number; y: number };
@@ -55,6 +57,16 @@ export class GameMap extends Container {
 						break;
 					case TileType.SPAWN:
 						this.startZone = { x: xQuantity * formattedJson.tilewidth, y: yQuantity * formattedJson.tileheight };
+						break;
+					case TileType.END:
+						const end = new InteractionBox({
+							x: xQuantity * formattedJson.tilewidth,
+							y: yQuantity * formattedJson.tileheight,
+							width: formattedJson.tileheight,
+							height: formattedJson.tileheight,
+							interactionTag: "teleport_lobby",
+						});
+						this.addChild(end);
 						break;
 				}
 				if (tile != null) {

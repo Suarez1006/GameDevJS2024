@@ -30,7 +30,7 @@ class PlaceholderDoor extends Container {
 		txt.position.set(this.width / 2, this.height / 2);
 		this.door.addChild(txt);
 
-		this.interactionBox = new InteractionBox({ x: 0, y: 30, width: width, height: 30 });
+		this.interactionBox = new InteractionBox({ x: 0, y: 30, width: width, height: 30, interactionTag: `teleport_${infoText}` });
 		this.addChild(this.interactionBox);
 		// this.interactionBox.beginFill(0xff00ff, 0.25);
 		// this.interactionBox.drawRect(0, 30, width, 30);
@@ -51,21 +51,21 @@ enum TileType {
 }
 export class LobbyMap extends Container {
 	private startZone: { x: number; y: number };
-	// private mapBg: Graphics = new Graphics();
+	private mapBg: Graphics = new Graphics();
 	constructor(player: Player) {
 		super();
 		this.eventMode = "none";
 
-		// this.mapBg.beginFill(0xbeced6);
-		// this.mapBg.drawRect(0, 0, 1, 1);
-		// // this.addChild(this.mapBg);
+		this.mapBg.beginFill(0xbeced6);
+		this.mapBg.drawRect(0, 0, 1, 1);
+		this.addChild(this.mapBg);
 
 		const rawJSON = Assets.get("lobby");
 		const formattedJson: JSONTileMap = formatTiledJSON(rawJSON);
 		const firstLayer = formattedJson.layersRecord["Base"] as TileLayer;
 		const data = firstLayer.data;
-		// this.mapBg.width = formattedJson.width * formattedJson.tilewidth;
-		// this.mapBg.height = formattedJson.height * formattedJson.tileheight;
+		this.mapBg.width = formattedJson.width * formattedJson.tilewidth;
+		this.mapBg.height = formattedJson.height * formattedJson.tileheight;
 
 		let tileIndex = 0;
 
@@ -97,19 +97,19 @@ export class LobbyMap extends Container {
 						tile.zIndex = 10;
 						break;
 					case TileType.FIRSTMAP:
-						tile = new PlaceholderDoor(0x9e693b, "FIRST", 30);
+						tile = new PlaceholderDoor(0x9e693b, "map1", 30);
 						tile.zIndex = 20;
 						break;
 					case TileType.SECONDMAP:
-						tile = new PlaceholderDoor(0x9e693b, "SECOND", 30);
+						tile = new PlaceholderDoor(0x9e693b, "map2", 30);
 						tile.zIndex = 20;
 						break;
 					case TileType.THIRDMAP:
-						tile = new PlaceholderDoor(0x9e693b, "THIRD", 30);
+						tile = new PlaceholderDoor(0x9e693b, "map3", 30);
 						tile.zIndex = 20;
 						break;
 					case TileType.FOURTHMAP:
-						tile = new PlaceholderDoor(0x9e693b, "FOURTH", 30);
+						tile = new PlaceholderDoor(0x9e693b, "map4", 30);
 						tile.zIndex = 20;
 						break;
 				}
