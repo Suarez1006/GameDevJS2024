@@ -23,14 +23,15 @@ export class Player extends Container {
 
 	constructor() {
 		super();
+		this.name = "Player";
 		this.keybinds = new Keyboard();
 
-		this.box2d.beginFill(0x4309ae);
-		this.box2d.drawRect(0, 0, 30, 30);
+		this.box2d.beginFill(0xff00ff, 0.3);
+		this.box2d.drawRect(0, 0, 28, 28);
 		this.box2d.visible = SHOW_COLLIDERS;
-		// this.addChild(this.box2d);
+		this.addChild(this.box2d);
 
-		addHitbox({ object: this, tag: "Character" });
+		addHitbox({ object: this, tag: "Player" });
 
 		Collisions.getInstance().collideEmitter.on("Interaction", (data: { objA: DisplayObject; objB: DisplayObject }) => {
 			let interactable: InteractionBox;
@@ -60,6 +61,11 @@ export class Player extends Container {
 	public update(): void {
 		this.playerMovement();
 		this.playerInteractions();
+
+		if (this.visuals.height > 28) {
+			this.visuals.height = 28;
+			this.visuals.scale.x = this.visuals.scale.y;
+		}
 	}
 
 	private playerInteractions(): void {

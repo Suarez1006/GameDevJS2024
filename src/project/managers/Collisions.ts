@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import type { DisplayObject, Rectangle } from "pixi.js";
+import type { DisplayObject } from "pixi.js";
 import { utils } from "pixi.js";
 
-export function addHitbox(params: { object: DisplayObject; tag: ColliderTag; customHitbox?: Rectangle }): void {
+export function addHitbox(params: { object: DisplayObject; tag: ColliderTag }): void {
 	Collisions.getInstance().addHitbox(params);
 }
 
-type ColliderTag = "Solid" | "Barrier" | "Collectable" | "Bullet" | "Character" | "Interaction";
+export function removeHitbox(object: DisplayObject): void {
+	Collisions.getInstance().removeHitbox(object);
+}
+
+type ColliderTag = "Solid" | "Barrier" | "Collectable" | "Bullet" | "Mob" | "Interaction" | "Player";
 type Hitbox2D = { tag: ColliderTag; reference: DisplayObject };
 
 export class Collisions {
@@ -15,7 +19,6 @@ export class Collisions {
 	public collideEmitter: utils.EventEmitter = new utils.EventEmitter();
 
 	private static instance: Collisions;
-	private constructor() {}
 
 	public static getInstance(): Collisions {
 		if (Collisions.instance == undefined) {
@@ -29,7 +32,7 @@ export class Collisions {
 		this.checkCollisions();
 	}
 
-	public addHitbox(params: { object: DisplayObject; tag: ColliderTag; customHitbox?: Rectangle }): void {
+	public addHitbox(params: { object: DisplayObject; tag: ColliderTag }): void {
 		this.objects.push({ tag: params.tag, reference: params.object });
 	}
 
@@ -66,12 +69,13 @@ export class Collisions {
 	}
 
 	private admitedTagPair: Record<ColliderTag, Array<ColliderTag>> = {
-		Solid: ["Character", "Bullet"],
-		Barrier: ["Character"],
-		Collectable: ["Character"],
-		Bullet: ["Character", "Solid"],
-		Character: ["Character", "Solid", "Barrier", "Bullet", "Collectable", "Interaction"],
-		Interaction: ["Character"],
+		Solid: ["Player", "Bullet", "Mob"],
+		Barrier: ["Player", "Mob"],
+		Collectable: ["Player"],
+		Bullet: ["Player", "Solid", "Mob"],
+		Player: ["Mob", "Solid", "Barrier", "Bullet", "Collectable", "Interaction"],
+		Interaction: ["Player"],
+		Mob: ["Barrier", "Player", "Solid", "Bullet"],
 	};
 
 	private checkAdmitedPairs(tagA: ColliderTag, tagB: ColliderTag): boolean {
@@ -82,19 +86,19 @@ export class Collisions {
 		const tagA = hitboxA.tag;
 		const tagB = hitboxB.tag;
 
-		if (tagA == "Character" && tagB == "Character") {
+		if ((tagA == "Mob" && tagB == "Mob") || (tagA == "Mob" && tagB == "Player") || (tagA == "Player" && tagB == "Mob")) {
 			this.resolveCharactersCollision(hitboxA.reference, hitboxB.reference);
 		}
 
-		if ((tagA == "Character" && tagB == "Solid") || (tagB == "Character" && tagA == "Solid")) {
+		if ((tagA == "Player" && tagB == "Solid") || (tagB == "Player" && tagA == "Solid")) {
 			this.resolveCharacterSolidCollision(hitboxA, hitboxB);
 		}
 
-		if ((tagA == "Character" && tagB == "Barrier") || (tagB == "Character" && tagA == "Barrier")) {
+		if ((tagA == "Player" && tagB == "Barrier") || (tagB == "Player" && tagA == "Barrier")) {
 			this.resolveCharacterSolidCollision(hitboxA, hitboxB);
 		}
 
-		if ((tagA == "Character" && tagB == "Interaction") || (tagB == "Character" && tagA == "Interaction")) {
+		if ((tagA == "Player" && tagB == "Interaction") || (tagB == "Player" && tagA == "Interaction")) {
 			this.collideEmitter.emit("Interaction", { objA: hitboxA.reference, objB: hitboxB.reference });
 		}
 	}
@@ -102,7 +106,7 @@ export class Collisions {
 	private resolveCharacterSolidCollision(hitboxA: Hitbox2D, hitboxB: Hitbox2D): void {
 		let character;
 		let solidObj;
-		if (hitboxA.tag == "Character") {
+		if (hitboxA.tag == "Player") {
 			character = hitboxA.reference;
 			solidObj = hitboxB.reference;
 		} else {
